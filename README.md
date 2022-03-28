@@ -1,0 +1,1 @@
+# multi-thread-safe-singleton-object-pool-pattern
