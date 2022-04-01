@@ -33,6 +33,9 @@ public class CarPool {
         return pool;
     }
 
+    // rent a car burada get -> client'te rent a car
+    // return a car release -> returnTheCar
+    // metotları client tarafında olsa mantıklı
 
     public Car rentACar() {
         synchronized (available) {
