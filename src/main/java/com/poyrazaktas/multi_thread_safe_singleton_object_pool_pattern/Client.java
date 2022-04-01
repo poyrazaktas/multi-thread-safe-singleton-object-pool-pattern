@@ -1,37 +1,44 @@
 package main.java.com.poyrazaktas.multi_thread_safe_singleton_object_pool_pattern;
 
-// implements runnable yerine extends thread
+import java.util.Date;
 
-public class Client implements Runnable{
-    public Thread thread;
-    private String name;
+public class Client extends Thread {
+    private Integer id;
+    private final CarPool carPool = CarPool.getCarPool();
 
-    public Client(String name) {
-        this.name = name;
+    public Client(int id) {
+        this.id = id;
     }
 
     @Override
     public void run() {
-        // car pool durumunu sout
-        // car rent
-        // rent edemezse
-        // thread sleep
-        //while(true = null){
-            // sleep;
-            //rent again
-        //}
-        // car return
-        CarPool carPool = CarPool.getCarPool();
-        carPool.rentACar();
-        System.out.println(carPool);
+        try {
+            Car car = rentACar();
+            while (car == null) {
+                Thread.sleep(5000);
+                car = rentACar();
+            }
+            returnACar(car);
+        }catch (InterruptedException e){
+            e.printStackTrace();
+        }
     }
 
-    public void start(){
-        System.out.println(name + " started!");
-        if (thread==null){
-            thread = new Thread(this,name);
-            thread.start();
+    private Car rentACar() {
+        Car car = carPool.getCar();
+        if(car !=null){
+            car.setRentDate(new Date());
+            car.setRentedBy(id);
+            System.out.println("Client "+id+" rented: "+car);
         }
+        return car;
+    }
+
+    private void returnACar(Car car) {
+        car.setReturnDate(new Date());
+        car.setReturnedBy(id);
+        System.out.println("Client "+id+" returned: "+car);
+        carPool.releaseCar(car);
     }
 
 }

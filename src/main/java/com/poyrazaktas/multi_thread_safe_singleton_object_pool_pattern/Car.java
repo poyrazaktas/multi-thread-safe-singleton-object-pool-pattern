@@ -3,8 +3,9 @@ package main.java.com.poyrazaktas.multi_thread_safe_singleton_object_pool_patter
 import java.util.Date;
 
 public class Car {
-    private int id;
-    private String rentedBy;
+    private Integer id;
+    private Integer rentedBy;
+    private Integer returnedBy;
     private Date rentDate;
     private Date returnDate;
 
@@ -13,12 +14,20 @@ public class Car {
         this.id = id;
     }
 
-    public String getRentedBy() {
+    public int getRentedBy() {
         return rentedBy;
     }
 
-    public void setRentedBy(String rentedBy) {
+    public void setRentedBy(int rentedBy) {
         this.rentedBy = rentedBy;
+    }
+
+    public int getReturnedBy() {
+        return returnedBy;
+    }
+
+    public void setReturnedBy(int returnedBy) {
+        this.returnedBy = returnedBy;
     }
 
     public Date getRentDate() {
@@ -37,4 +46,14 @@ public class Car {
         this.returnDate = returnDate;
     }
 
+    @Override
+    public String toString() {
+        return "Car{" +
+                "id=" + id +
+                ", rentedBy=" + rentedBy +
+                ", returnedBy=" + returnedBy +
+                ", rentDate=" + rentDate +
+                ", returnDate=" + returnDate +
+                '}';
+    }
 }

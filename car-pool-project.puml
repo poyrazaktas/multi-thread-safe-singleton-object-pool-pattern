@@ -1,0 +1,39 @@
+@startuml
+class main.java.com.poyrazaktas.multi_thread_safe_singleton_object_pool_pattern.Client {
+- Integer id
+- CarPool carPool
++ void run()
+- Car rentACar()
+- void returnACar(Car)
+}
+class main.java.com.poyrazaktas.multi_thread_safe_singleton_object_pool_pattern.CarPool {
+- int carCount
+- {static} CarPool pool
+- List<Car> available
+- List<Car> inUse
+- void initCarPool()
++ {static} CarPool getCarPool()
++ Car getCar()
++ void releaseCar(Car)
++ String toString()
+}
+class main.java.com.poyrazaktas.multi_thread_safe_singleton_object_pool_pattern.Car {
+- Integer id
+- Integer rentedBy
+- Integer returnedBy
+- Date rentDate
+- Date returnDate
++ int getRentedBy()
++ void setRentedBy(int)
++ int getReturnedBy()
++ void setReturnedBy(int)
++ Date getRentDate()
++ void setRentDate(Date)
++ Date getReturnDate()
++ void setReturnDate(Date)
++ String toString()
+}
+
+
+main.java.com.poyrazaktas.multi_thread_safe_singleton_object_pool_pattern.Thread <|-- main.java.com.poyrazaktas.multi_thread_safe_singleton_object_pool_pattern.Client
+@enduml

@@ -8,8 +8,8 @@ public class CarPool {
     private final int carCount = 10;
 
     private static volatile CarPool pool = null;
-    private static final List<Car> available = new ArrayList<>();
-    private static final List<Car> inUse = new ArrayList<>();
+    private final List<Car> available = new ArrayList<>();
+    private final List<Car> inUse = new ArrayList<>();
 
     private CarPool() {
         initCarPool();
@@ -33,11 +33,7 @@ public class CarPool {
         return pool;
     }
 
-    // rent a car burada get -> client'te rent a car
-    // return a car release -> returnTheCar
-    // metotları client tarafında olsa mantıklı
-
-    public Car rentACar() {
+    public Car getCar() {
         synchronized (available) {
             if (available.size() != 0) {
                 Car car = available.get(0);
@@ -46,12 +42,12 @@ public class CarPool {
                 available.remove(0);
                 return car;
             } else {
-                throw new RuntimeException("No pickers are available!");
+                return null;
             }
         }
     }
 
-    public void returnTheCar(Car car) {
+    public void releaseCar(Car car) {
         synchronized (available) {
             available.add(car);
             inUse.remove(car);
