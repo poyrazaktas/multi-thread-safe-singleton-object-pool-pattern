@@ -1,0 +1,122 @@
+= Proje ödevi
+Poyraz Aktaş <180201109@kocaeli.edu.tr>
+
+Poyraz Aktaş - 180201109
+
+== Giriş
+
+Bu projede link:https://www.moovtr.com/[Moov], link:https://www.tiktakkirala.com/[Tiktak] gibi araç kiralama uygulamalarının Object Pool Pattern kullanarak multi-thread safe singleton ile multi-thread olarak konsol üzerinde gerçekleştirildi.
+
+Programlama dili olarak Java 11'i tercih edildi.
+
+Senaryo olarak 10 arabanın bulunduğu bir _araba havuzundan_ 15 müşterinin aynı anda(_paralel olarak_) araba kiralaması gerçeklendi.
+
+== Yöntem
+
+=== Object Pool Oluşturulması
+
+İlk olarak *Car* sınıfı oluşturuldu. Bu sınıf Object Pool oluşturmak için kullanıldı.
+
+Object Pool'un ismine *CarPool* olarak karar verildi. _CarPool_ sınıfında multi-thread safe singleton ile Object Pool Pattern'i uygulandı.
+
+Buradaki kiralanabilir(*available*) ve kullanımda(*inUse*) olan arabaları ayırmak için iki ayrı liste oluşturuldu.
+
+10 tane arabanın bulunduğu bir _CarPool_ oluşturmak için *initCarPool()* metodu yazıldı. Oluşturulan arabaların hepsi kiralanabilir arabaların listesine(_available'a_) eklendi.
+
+[source,java]
+----
+    private void initCarPool() {
+        for (int i = 1; i <= carCount; i++) {
+            available.add(new Car(i));
+        }
+    }
+----
+
+_CarPool_'dan araba alabilmek için *getCar()* metodu yazıldı. Burada kiralanabilir araçlara birden fazla thread aynı anda erişebileceği için *synchronized* anahtar kelimesi ile senkronizasyon sağlandı. Eğer kiralanabilir bir araba varsa bu araba kiralanabilir araba listesinden çıkarılır ve kullanımda listesine atılır. Eğer kiralanabilecek bir araç yoksa *null* değer döndürülür.
+
+[source,java]
+----
+    public Car getCar() {
+        synchronized (available) {
+            if (available.size() != 0) {
+                Car car = available.get(0);
+                inUse.add(car);
+                available.remove(0);
+                return car;
+            } else {
+                return null;
+            }
+        }
+    }
+----
+
+Kiralanmış arabalar teslim edildiğinde _CarPool_'a geri eklenmesi için *releaseCar(Car car)* metodu yazıldı. Buraya parametre olarak verilen araba ilk önce kiralanabilir araç listesine eklenir ardından kullanımda olan araçların listesinden çıkarılır. Birden fazla thread'in bu metotu tetiklerken senkronize edilmesi sağlandı.
+
+[source,java]
+----
+    public void releaseCar(Car car) {
+        synchronized (available) {
+            available.add(car);
+            inUse.remove(car);
+        }
+    }
+----
+
+
+=== Client(Müşteri) Thread'lerinin Oluşturulması
+
+Projenin amacı multi-thread olarak Object Pool Pattern'ini gerçekleştirmek olduğu için buradaki müşteri sınıfları Java'daki _Thread_ sınıfından miras alarak oluşturuldu. Thread sınıfı extend edildiğinde _override_ edilmesi gereken *run()* metodu arabanın kiralanması ve kiralanan arabanın teslim edilmesi senaryosunu gerçekleştirecek şekilde dolduruldu. Burada eğer kiralanacak araba kalmadıysa 5 saniye beklenir ve kiralama metodu tekrardan çağırılır.
+
+[source,java]
+----
+    @Override
+    public void run() {
+        try {
+            Car car = rentACar();
+            while (car == null) {
+                Thread.sleep(5000);
+                car = rentACar();
+            }
+            returnACar(car);
+        }catch (InterruptedException e){
+            e.printStackTrace();
+        }
+    }
+----
+
+Müşterinin araba kiralaması için *rentACar()* metodu yazıldı. Bu metot _CarPool_'dan bir araba alır ve eğer kiralanabilir araba varsa bu arabanın kiralanma tarihini ve kiralayan kişi alanlarını günceller.
+
+[source,java]
+----
+    private Car rentACar() {
+        Car car = carPool.getCar();
+        if(car !=null){
+            car.setRentDate(new Date());
+            car.setRentedBy(id);
+            System.out.println("Client "+id+" rented: "+car);
+        }
+        return car;
+    }
+----
+
+Müşterinin kiralanan arabayı teslim etmesi için *returnACar(Car car)* metodu yazıldı. Bu metot kiralan aracın teslim tarihini ve teslim eden kişi alanlarını günceller.
+
+[source,java]
+----
+    private void returnACar(Car car) {
+        car.setReturnDate(new Date());
+        car.setReturnedBy(id);
+        System.out.println("Client "+id+" returned: "+car);
+        carPool.releaseCar(car);
+    }
+----
+
+== Kaynaklar
+* http://www.blackwasp.co.uk/ObjectPool.aspx
+
+* https://java-design-patterns.com/patterns/object-pool/
+
+* https://www.geeksforgeeks.org/multithreading-in-java/
+
+* https://asciidoctor.org/docs/asciidoc-writers-guide/
+

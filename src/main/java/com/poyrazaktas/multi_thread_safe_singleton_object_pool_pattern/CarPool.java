@@ -37,7 +37,6 @@ public class CarPool {
         synchronized (available) {
             if (available.size() != 0) {
                 Car car = available.get(0);
-                car.setRentDate(new Date());
                 inUse.add(car);
                 available.remove(0);
                 return car;
