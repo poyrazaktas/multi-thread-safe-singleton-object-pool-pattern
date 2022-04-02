@@ -2,11 +2,11 @@ package main.java.com.poyrazaktas.multi_thread_safe_singleton_object_pool_patter
 
 import java.util.Date;
 
-public class Client extends Thread {
+public class Tenant extends Thread {
     private Integer id;
     private final CarPool carPool = CarPool.getCarPool();
 
-    public Client(int id) {
+    public Tenant(int id) {
         this.id = id;
     }
 
@@ -29,6 +29,7 @@ public class Client extends Thread {
         if(car !=null){
             car.setRentDate(new Date());
             car.setRentedBy(id);
+            car.getListOfTenants().add(id);
             System.out.println("Client "+id+" rented: "+car);
         }
         return car;

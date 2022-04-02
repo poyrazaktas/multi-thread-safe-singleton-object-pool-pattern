@@ -4,8 +4,8 @@ public class Main {
     public static void main(String[] args) {
         final int numberOfClients = 15;
         for (int i = 1; i <= numberOfClients; i++) {
-            Client client = new Client(i);
-            client.start();
+            Tenant tenant = new Tenant(i);
+            tenant.start();
         }
 
     }

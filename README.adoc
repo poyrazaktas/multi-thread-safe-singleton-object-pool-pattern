@@ -5,9 +5,7 @@ Poyraz Aktaş - 180201109
 
 == Giriş
 
-Bu projede link:https://www.moovtr.com/[Moov], link:https://www.tiktakkirala.com/[Tiktak] gibi araç kiralama uygulamalarının Object Pool Pattern kullanarak multi-thread safe singleton ile multi-thread olarak konsol üzerinde gerçekleştirildi.
-
-Programlama dili olarak Java 11'i tercih edildi.
+Bu projede link:https://www.moovtr.com/[Moov], link:https://www.tiktakkirala.com/[Tiktak] gibi araç kiralama uygulamalarının Object Pool Pattern kullanarak multi-thread safe singleton ile multi-thread olarak Java 11 programlama dili üzerinden konsoldan çıktı alarak gerçekleştirildi.
 
 Senaryo olarak 10 arabanın bulunduğu bir _araba havuzundan_ 15 müşterinin aynı anda(_paralel olarak_) araba kiralaması gerçeklendi.
 
@@ -63,9 +61,9 @@ Kiralanmış arabalar teslim edildiğinde _CarPool_'a geri eklenmesi için *rele
 ----
 
 
-=== Client(Müşteri) Thread'lerinin Oluşturulması
+=== Tenant(Kiracı) Sınıfı - Client Thread'lerinin Oluşturulması
 
-Projenin amacı multi-thread olarak Object Pool Pattern'ini gerçekleştirmek olduğu için buradaki müşteri sınıfları Java'daki _Thread_ sınıfından miras alarak oluşturuldu. Thread sınıfı extend edildiğinde _override_ edilmesi gereken *run()* metodu arabanın kiralanması ve kiralanan arabanın teslim edilmesi senaryosunu gerçekleştirecek şekilde dolduruldu. Burada eğer kiralanacak araba kalmadıysa 5 saniye beklenir ve kiralama metodu tekrardan çağırılır.
+Projenin amacı multi-thread olarak Object Pool Pattern'ini gerçekleştirmek olduğu için buradaki *Tenant*(Kiracı) sınıfı Java'daki _Thread_ sınıfından miras alarak oluşturuldu. Thread sınıfı extend edildiğinde _override_ edilmesi gereken *run()* metodu arabanın kiralanması ve kiralanan arabanın teslim edilmesi senaryosunu gerçekleştirecek şekilde dolduruldu. Buradaki senaryoda eğer kiralanacak araba kalmadıysa 5 saniye beklenir ve kiralama metodu tekrardan çağırılır.
 
 [source,java]
 ----
@@ -93,6 +91,7 @@ Müşterinin araba kiralaması için *rentACar()* metodu yazıldı. Bu metot _Ca
         if(car !=null){
             car.setRentDate(new Date());
             car.setRentedBy(id);
+            car.getListOfTenants().add(id);
             System.out.println("Client "+id+" rented: "+car);
         }
         return car;
