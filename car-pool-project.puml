@@ -12,7 +12,6 @@ class main.java.com.poyrazaktas.multi_thread_safe_singleton_object_pool_pattern.
 }
 class main.java.com.poyrazaktas.multi_thread_safe_singleton_object_pool_pattern.Tenant {
 - Integer id
-- CarPool carPool
 + void run()
 - Car rentACar()
 - void returnACar(Car)

@@ -4,7 +4,6 @@ import java.util.Date;
 
 public class Tenant extends Thread {
     private Integer id;
-    private final CarPool carPool = CarPool.getCarPool();
 
     public Tenant(int id) {
         this.id = id;
@@ -25,7 +24,7 @@ public class Tenant extends Thread {
     }
 
     private Car rentACar() {
-        Car car = carPool.getCar();
+        Car car = CarPool.getCarPool().getCar();
         if(car !=null){
             car.setRentDate(new Date());
             car.setRentedBy(id);
@@ -39,7 +38,7 @@ public class Tenant extends Thread {
         car.setReturnDate(new Date());
         car.setReturnedBy(id);
         System.out.println("Client "+id+" returned: "+car);
-        carPool.releaseCar(car);
+        CarPool.getCarPool().releaseCar(car);
     }
 
 }
