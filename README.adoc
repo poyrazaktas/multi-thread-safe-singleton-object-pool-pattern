@@ -23,10 +23,32 @@ Buradaki kiralanabilir(*available*) ve kullanımda(*inUse*) olan arabaları ayı
 
 [source,java]
 ----
+    private final int carCount = 10;
+
+    private static volatile CarPool pool = null;
+    private final List<Car> available = new ArrayList<>();
+    private final List<Car> inUse = new ArrayList<>();
+
+    private CarPool() {
+        initCarPool();
+
+    }
+
     private void initCarPool() {
         for (int i = 1; i <= carCount; i++) {
             available.add(new Car(i));
         }
+    }
+
+    public static CarPool getCarPool() {
+        if (pool == null) {
+            synchronized (CarPool.class) {
+                if (pool == null) {
+                    pool = new CarPool();
+                }
+            }
+        }
+        return pool;
     }
 ----
 
